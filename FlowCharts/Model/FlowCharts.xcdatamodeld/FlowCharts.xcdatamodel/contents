@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="13772" systemVersion="17D47" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+    <entity name="Diagram" representedClassName=".FlowChartDiagram" syncable="YES">
+        <attribute name="height" attributeType="Double" usesScalarValueType="YES" syncable="YES"/>
+        <attribute name="width" attributeType="Double" usesScalarValueType="YES" syncable="YES"/>
+        <relationship name="flowChartLinks" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="Link" inverseName="diagram" inverseEntity="Link" syncable="YES"/>
+        <relationship name="flowChartSymbols" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="Symbol" inverseName="diagram" inverseEntity="Symbol" syncable="YES"/>
+    </entity>
+    <entity name="Link" representedClassName=".FlowChartLink" syncable="YES">
+        <attribute name="lineDashPatternPresetId" attributeType="Integer 32" usesScalarValueType="YES" syncable="YES"/>
+        <attribute name="lineTypePresetId" attributeType="Integer 32" usesScalarValueType="YES" syncable="YES"/>
+        <attribute name="text" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="diagram" maxCount="1" deletionRule="Nullify" destinationEntity="Diagram" inverseName="flowChartLinks" inverseEntity="Diagram" syncable="YES"/>
+        <relationship name="ending" maxCount="1" deletionRule="Cascade" destinationEntity="LinkAnchor" inverseName="endingLink" inverseEntity="LinkAnchor" syncable="YES"/>
+        <relationship name="origin" maxCount="1" deletionRule="Cascade" destinationEntity="LinkAnchor" inverseName="originLink" inverseEntity="LinkAnchor" syncable="YES"/>
+    </entity>
+    <entity name="LinkAnchor" representedClassName=".FlowChartLinkAnchor" syncable="YES">
+        <attribute name="directionValue" attributeType="Integer 32" valueTransformerName="DirectionValueTransformer" usesScalarValueType="YES" customClassName="DiagramGeometry.Direction" syncable="YES"/>
+        <attribute name="pointerPresetId" attributeType="Integer 32" usesScalarValueType="YES" syncable="YES"/>
+        <attribute name="x" attributeType="Double" usesScalarValueType="YES" syncable="YES"/>
+        <attribute name="y" attributeType="Double" usesScalarValueType="YES" syncable="YES"/>
+        <relationship name="endingLink" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Link" inverseName="ending" inverseEntity="Link" syncable="YES"/>
+        <relationship name="originLink" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Link" inverseName="origin" inverseEntity="Link" syncable="YES"/>
+        <relationship name="symbolAnchor" maxCount="1" deletionRule="Nullify" destinationEntity="SymbolAnchor" inverseName="linkAnchors" inverseEntity="SymbolAnchor" syncable="YES"/>
+    </entity>
+    <entity name="Symbol" representedClassName=".FlowChartSymbol" syncable="YES">
+        <attribute name="color" attributeType="Transformable" valueTransformerName="UIColorToHexValueTransformer" customClassName="UIColor" syncable="YES"/>
+        <attribute name="height" attributeType="Double" usesScalarValueType="YES" syncable="YES"/>
+        <attribute name="shapePresetId" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES" syncable="YES"/>
+        <attribute name="string" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="width" attributeType="Double" usesScalarValueType="YES" syncable="YES"/>
+        <attribute name="x" attributeType="Double" usesScalarValueType="YES" syncable="YES"/>
+        <attribute name="y" attributeType="Double" usesScalarValueType="YES" syncable="YES"/>
+        <relationship name="anchors" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="SymbolAnchor" inverseName="symbol" inverseEntity="SymbolAnchor" syncable="YES"/>
+        <relationship name="diagram" maxCount="1" deletionRule="Nullify" destinationEntity="Diagram" inverseName="flowChartSymbols" inverseEntity="Diagram" syncable="YES"/>
+    </entity>
+    <entity name="SymbolAnchor" representedClassName=".FlowChartSymbolAnchor" syncable="YES">
+        <attribute name="directionValue" attributeType="Integer 32" valueTransformerName="DirectionValueTransformer" usesScalarValueType="YES" customClassName="DiagramGeometry.Direction" syncable="YES"/>
+        <attribute name="x" attributeType="Double" usesScalarValueType="YES" syncable="YES"/>
+        <attribute name="y" attributeType="Double" usesScalarValueType="YES" syncable="YES"/>
+        <relationship name="linkAnchors" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="LinkAnchor" inverseName="symbolAnchor" inverseEntity="LinkAnchor" syncable="YES"/>
+        <relationship name="symbol" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Symbol" inverseName="anchors" inverseEntity="Symbol" syncable="YES"/>
+    </entity>
+    <elements>
+        <element name="Diagram" positionX="-63" positionY="-18" width="128" height="105"/>
+        <element name="Link" positionX="-63" positionY="36" width="128" height="135"/>
+        <element name="LinkAnchor" positionX="-54" positionY="45" width="128" height="150"/>
+        <element name="Symbol" positionX="-54" positionY="-9" width="128" height="180"/>
+        <element name="SymbolAnchor" positionX="-45" positionY="54" width="128" height="120"/>
+    </elements>
+</model>
