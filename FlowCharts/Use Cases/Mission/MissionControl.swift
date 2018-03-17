@@ -221,9 +221,12 @@ class MissionControl: NSObject {
         
         mission.onDeleted = { [unowned mission] transition in
             mission.presenter.prepareForDismission(withIn: transition)
+            transition.addBeginning { [unowned self] in
+                self.linkMission = nil
+            }
         }
         
-        mission.presenter.present(with: .defaultPresentation())
+        mission.presenter.present(with: transition)
         
         linkMission = mission
     }
