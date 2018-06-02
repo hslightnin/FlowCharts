@@ -1,42 +1,59 @@
 #  Architecture
 
-Here I describe the architecture of the PureFlow app (https://itunes.apple.com/us/app/pureflow/id600955222).
+This is the short description of the architecture of the PureFlow app (https://itunes.apple.com/us/app/pureflow/id600955222).
 
-## Basic concepts.
+## Table of contents
 
-When building the architecture of this app I faced two main problems. Let's describe these problems and introduce concepts that helped to solve them.
+- [Basic concepts](#basic-concepts)
+- [First problem: "Distributed" views](#first-problem-distributed-views)
+- [First problem solution: Presenters](#first-problem-solution-presenters)
+- [Second problem: Coordination of changes in the UI](#second-problem-coordination-of-changes-in-the-ui)
+- [Second problem solution: Transitions](#second-problem-solution-transitions)
+- [Implementation](#implementation)
+- [Transitions](#transitions)
+- [Managed Transitions](#managed-transitions)
+- [UIViewController Transitions](#uiviewcontroller-transitions)
+- [Presenters](#presenters)
+- [Types of Presenters (based on behaviour)](#types-of-presenters-based-on-their-behaviour)
+- [Free Presenters](#free-presenters)
+- [Fixed Presenters](#fixed-presenters)
+- [Flexible Presenters](#flexible-presenters)
+- [Types of Presenters (base on presented content)](#types-of-presenters-base-on-presented-content)
+- [Item Presenters](#item-presenters)
+- [Use Case Presenters](#use-case-presenters)
+- [Use Cases](#use-cases)
 
-### First problem: Decomposition into modules
+## Basic concepts
 
-Usually a module in an iOS application is build around UIViewController. This approach is used both in standard MVC pattern and in other pattens like MVVM or VIPER. We take app's screen (or part of it) and turn it into separate module.
+When building the app I faced two main problems. First I want to describe these problems and introduce concepts that helped me to solve them. As we will see, the architecture of the PureFlow app is not something completely unique. It is very similar to other patterns like MVP, MVVM and especially VIPER but with some peculiarities.
 
-PureFlow has basically one screen and one UIViewController where user performs all tasks. Contents of this one UIViewController are always altered to perform various tasks (adding, deleting and editing diagram elements). So these patterns can't be as is. We need to change them so they fit out app.
+### First problem: "Distributed" views
 
-The main difference is in the "View" part. In PureFlow the "View" consists of various UI items located in different places in view hierarchy. Let's look at example. If we want to edit symbol colour we need the following UI items: a UIButton (which is a subview of diagram scroll view), UITextView (which is a subview of diagram content view), UITapGestureRecognizer for double tap to start editing (which is added to symbol view) and UITapGestureRecognizer for cancelling ediging (which is added to diagram scroll view). So we need 4 UI elements that are located in entirely different places and are not connected with each other.
+Usually a module in an iOS application is built around UIViewController. This approach is used both in standard MVC pattern and other approaches like MVVM or VIPER. We take app's screen (or part of it) and turn it into separate module.
+
+PureFlow app has basically one main screen and one UIViewController where user performs all tasks. Contents of this one UIViewController are always altered to perform various tasks (adding, deleting and editing diagram elements). So these patterns can't be used as is. We need to adopt them for our app.
+
+The main difference is in the "View" part. In standard approach UI items for one task are located on one UIView and managed by one UIViewController. In PureFlow the "View" consists of various UI items located in different places in view hierarchy. Let's look at an example. If we want to edit symbol colour we need the following UI items: a UIButton (which is a subview of diagram scroll view), UITextView (which is a subview of diagram content view), UITapGestureRecognizer for double tap to start editing (which is added to symbol view) and UITapGestureRecognizer for cancelling editing (which is added to diagram scroll view). So we need 4 UI elements that are located in entirely different places and are not connected with each other by any means. They are "distributed" throughout view and view controller hierarchies.
 
 These UI items can be UIViews, UIViewControllers, UIGestureRecognizes etc. We need a universal API for working with all those types of items in similar way.
 
-### Presenters
+### First problem solution: Presenters
 
 The first major concept that is used throughout the app is *Presenter*. The concept is pretty simple and straightforward. Presenter can present UI items and dismiss them. It provides unified API for presenting and dismissing UIViews, CALayers, UIViewControllers, UIGestureRecognizers or anything else that lets user edit the diagram (it could be motion detection, speech recognition or whatever).
 
-### Use Cases
-
-The second major concept is *Use Case*. As those items are not connected with each other (for example by the common parent view) we need to create some entities that manage all those items together. These entities are Use Cases. Use Case manages UI items for performing one particular task. Use Case is a the name for the app's module. It contains presentation and business logic for one task.
-
 ### Second problem: Coordination of changes in the UI
 
-As I said we are constantly changing our only screen for different tasks. We show and hide buttons, text views and other controls, present and dismiss view controllers. Usually we do it with some animations. All those UI items belong to different Use Cases. Therefore they are located in different modules and we should not have direct access to them from one particular place in code. But we need a way to perform operations with UI items from different Use Cases together. For example we may need to present buttons for different use cases inside one animations block (Or present UI for one Use Case and dismiss UI for another inside the same animation block).
+As I already said we are constantly changing our only screen for different tasks. We present and hide buttons, text views and other controls, present and dismiss view controllers. Usually we do it with some animation. All those UI items are used for different use cases and should be put inside different app modules. So we should not have direct access to them from one particular place in code (as it will have too many dependencies). But we need a way to perform operations with UI items from different modules together. For example we may need to present buttons for different use cases inside one animations block (Or present UI for one Use Case and dismiss UI for another inside the same animation block).
 
-### Transitions
+### Second problem solution: Transitions
 
-This problem is solved by the use of *Transitions*. Transition is an object that encapsulates actions needed for the app to go from one state to another. Transition contains 3 stages: beginning, animation and completion. Before the state change all Use Cases that participate in it register their actions. Then the transition is performed.
+This problem is solved by the use of *Transitions*. Transition is an object that encapsulates actions needed for the app to go from one state to another. Transition contains 3 stages: beginning, animation and completion. Before the state change all app modules that participate in it register their actions. Then the transition is performed.
 
 ## Implementation
 
-So the design is based on 3 major concepts: Transitions, Presenters and Use Cases. Let's describe their implementation and them see how they fit together.
+So the main building blocks for the app are Presenters and Transitions.  Now let's describe their implementation and see how they work together.
 
-### Transitions implementation
+### Transitions
 
 All transitions inherit from the [Transition](PresenterKit/Transition/Transition.swift) class.
 
@@ -54,19 +71,21 @@ And method for performing transition:
 func perform()
 ```
 
-The use is pretty simple. We create Transition, pass it to Use Cases, they register actions. Then we call `perform()` method.
+The use is pretty simple. We create Transition, pass it to app modules responsible for different tasks, they register actions. Then we call `perform()` method.
 
 There are two type of transitions: *Managed Transitions* and *View Controller Transitions*.
 
+#### Managed Transitions
+
 Managed transitions are managed by the user. We can configure animation properties and then perform transition. They inherit from [ManagedTransition](PresenterKit/Transition/ManagedTransition.swift) class.
 
-View Controller Transitions do not allow user to modify animation properties. They perform animations alongside UIViewController presentation and dismission. They inherit from either [ViewControllerPresentationTransition](PresenterKit/Transition/ViewControllerPresentationTransition.swift) or from [ViewControllerDismissionTransition](PresenterKit/Transition/ViewControllerDismissionTransition.swift) classes.
+#### UIViewController Transitions
 
-### Item Presenters and Use Case Presenters
+View Controller Transitions do not allow user to modify animation properties. They perform animations alongside UIViewController presentation and dismission. They inherit from either [ViewControllerPresentationTransition](PresenterKit/Transition/ViewControllerPresentationTransition.swift) or [ViewControllerDismissionTransition](PresenterKit/Transition/ViewControllerDismissionTransition.swift) classes.
 
-I already said that Presenter provides common interface for working with various UI items. But they are used not only for presenting single UI items. They can present UI for the entire Use Cases. Such presenters are called Use Case Presenters. The do not interact with UI items directly but with Item Presenters. (Moreover, there are Mission Presenter that present several Use Case Presenters, but this part of design if not finished yet). The interesting thing here is that Item Presenters contain view login, so they ares "Views" in terms of MVC pattern. Use Case Presenters contain presentation logic, so they would be "Controllers" in MVC. So "Views" and "Controllers" share the same base class in our app. It may seem confusing but works pretty well.
+### Presenters
 
-### Presenter
+Presenter provides common interface for working with any entities that can be "presented".
 
 Implementation of presenters is based on the use of Transitions. All presenters inherit from [Presenter](PresenterKit/Presenter/Presenter.swift) class. It has two opened method, where subclasses should prepare presentation or dismission actions:
 
@@ -75,22 +94,26 @@ open func setUpPresentation(withIn transition: Transition)
 open func setUpDismission(withIn transition: Transition)
 ```
 
-There 3 types of presenters: Free, Fixed and Flexible. For now Free and Fixed Presenters are used for Item Presenters and Flexible are used for Use Case Presenters. But that's not a rule. Both Item Presenters and Use Case Presenters can inherit from any of the 3 type.
+### Types of Presenters (based on their behaviour)
 
-### Free presenter
+Different presented items have different behaviour. So we have several types of Presenters for working with different items. They differ in the way they work with Transitions.
 
-Free presenters can be used with any transition. User of this presenter can create any Transition and pass it to Free Presenter.
+#### Free presenters
+
+Free presenters can be used with any Transition.
 
 They inherit from [FreePresenter](PresenterKit/Presenter/FreePresenter.swift) class. Two main methods are:
 
 ```
 func prepareForPresentation(withIn transition: Transition)
 func prepareForDismission(withIn transition: Transition)
-````
+```
 
-### Fixed presenter
+The user of the class creates any Transitions he wants and passes it to either one or several Presenters. Then the user performs Transition. The example is any UIKit control link UIButton or UITextView, we can present them with any animation we want.
 
-Fixed presenters can only use transitions that they create for themselves. When using Fixed Presenter we do not create Transition for it, but rather ask Presenter to create Transition for us.
+#### Fixed presenters
+
+Fixed presenters can only use transitions that they create for themselves.
 
 They inherit from [FixedPresenter](PresenterKit/Presenter/FixedPresenter.swift) class. Here we have methods that return Transitions:
 
@@ -106,31 +129,29 @@ open func createPresentationTransition() -> Transition
 open func createDismissionTransition() -> Transition
 ```
 
-### Item presenters
+When using Fixed Presenter we do not create Transition for it, but rather ask Presenter to create Transition for us. The example of use for such presenter is for example standard popover. We can't tell it to be presented with any arbitrary transition.
 
-Item Presenters are either Free Presenters or Fixed Presenters. The example of Free Presenter is [ButtonPresenter](FlowCharts/DiagramButtonPresenter.swift), the example of Fixed presenter is [PopoverPresenter](FlowCharts/PopoverPresenter.swift).
+#### Flexible presenters
 
-### Use Case Presenters (Flexible Presenters)
-
-Use Case Presenters present several items. Also at different times Use Case Presenter can present different items. For example Use Case Presenter for editing symbol colour first presents button. When button is pressed it presents popover with collection view. So it can be behave as free or fixed presenters depending on their state. Such presenters are called Flexible Presenters. The inherit from [FlexiblePresenter](PresenterKit/Presenter/FlexiblePresenter.swift) class.
+Flexible presenters can behave as free or fixed presenters depending on their state. They inherit from [FlexiblePresenter](PresenterKit/Presenter/FlexiblePresenter.swift) class.
 
 Flexible Presenter have both sets of methods:
 
-It has methods for working with free transitions:
+It has methods for working with arbitrary transitions:
 
 ```
 func prepareForPresentation(withIn freeTransition: Transition)
 func prepareForDismission(withIn freeTransition: Transition)
 ```
 
-And methods for working with fixed transitions:
+And methods for creating transitions:
 
 ```
 func prepareFixedPresentationTransition() -> Transition
 func prepareFixedDismissionTransition() -> Transition
 ```
 
-The also have open methods that must to implemented by suclasses to determine how presenter should behave:
+The also have open methods that must to implemented by subclasses to determine how presenter should behave in concrete situation:
 
 ```
 open var needsFixedPresentationTransition: Bool
@@ -139,34 +160,45 @@ open var needsFixedDismissionTransition: Bool
 open func createFixedDismissionTransition() -> Transition
 ```
 
-### Use Case Structure
+Free and Fixed transition are used for presenting single UI items. Flexible presenters usually present group of items. Though it is not strict rule. All types of presenters can be used in different situations.
 
-Not let's look at the structure of the app's module (Use Case). As I've already said that it includes Item Presenters and Use Case Presenter.
+### Types of Presenters (base on presented content)
+
+Here we come to another important implementation concept. Presenters can be used for presenting single view items and for presenting groups of such items responsible for one task. The first are called Item Presents and the second - Use Case Presenters. Though these tasks may look similar they are quite different. Presenting a view item means some interactions with UIKit or CoreAnimation layers. Presenting a group of items means interpreting user actions and changing those items accordingly. Item Presenters play role of "Views" while Use Case Presenters play role of "Controllers" in our architecture. "Views" and "Controllers" share the same base class in our app. It may seem confusing but works pretty well.
+
+#### Item presenters
+
+Item Presenters are usually Free Presenters or Fixed Presenters. They present single UI item. The example of Free Item Presenter is [ButtonPresenter](FlowCharts/DiagramButtonPresenter.swift), the example of Fixed Item Presenter is [PopoverPresenter](FlowCharts/PopoverPresenter.swift).
+
+#### Use Case Presenters
+
+Use Case Presenters present several items. At different times Use Case Presenter can present different items. For example Use Case Presenter for editing symbol colour first presents button. When button is pressed it presents popover with collection view where user actually chooses color. I'll show an example in the next section.
+
+## Use Cases
+
+So we have Item Presenters for working with UI items and we have Use Case Presenters for presentation logic. Now lets see how they fit together.
+
+The module of the app is called Use Case. Besides Item Presenters and Use Case Presenter it contains other classes.
 
 Use Case Presenter interacts with Items Presenter through facade class called Use Case UI. Using of single facade for multiple Item Presenters makes code look cleaner and easier to read and makes it easier to write and maintain unit tests. Use Case UI can be reused for several use cases. For example there is the same UI for deleting links and symbols and for editing their text.
 
-Use case has Interactor class that contains all business logic for the Use Case. The name is taken from VIPER pattern.
+Use case has Interactor class that contains all interactions with model objects.
 
-Use Case also has Use Case facade class that creates all other module components and establishes connections between them.
+Use Case also has facade class for the entire module that creates all other components and establishes connections between them.
 
 Simple example (Move Symbol Use Case):
 
-[MoveSymbolUseCase](FlowCharts/Use%20Cases/Symbol/Move/MoveSymbolUseCase.swift) - Module facade, create module componets
-
-[MoveSymbolPresenter](FlowCharts/Use%20Cases/Symbol/Move/MoveSymbolPresenter.swift) - Use Case Presenter, contains presentation logic
-
-[MoveSymbolInteractor](FlowCharts/Use%20Cases/Symbol/Move/MoveSymbolInteractor.swift) - Interactor, interacts with the model
-
-[MoveSymbolUI](FlowCharts/Use%20Cases/Symbol/Move/MoveSymbolUI.swift) - Use Case UI, facade for interacting with Item Presenters Move Symbol Use Case has only one Item Presenter, usualy they have more)
-
+[MoveSymbolUseCase](FlowCharts/Use%20Cases/Symbol/Move/MoveSymbolUseCase.swift) - Module facade, create module componets\
+[MoveSymbolPresenter](FlowCharts/Use%20Cases/Symbol/Move/MoveSymbolPresenter.swift) - Use Case Presenter, contains presentation logic\
+[MoveSymbolInteractor](FlowCharts/Use%20Cases/Symbol/Move/MoveSymbolInteractor.swift) - Interactor, interacts with the model\
+[MoveSymbolUI](FlowCharts/Use%20Cases/Symbol/Move/MoveSymbolUI.swift) - Use Case UI, facade for interacting with Item Presenters Move Symbol Use Case has only one Item Presenter, usualy they have more)\
 [PanGestureRecognizerPresenter](FlowCharts/PanGestureRecognizerPresenter.swift) - Item Presenter, present UIPanGestureRecognizer (can be reused for multiple Use Cases)
 
 Unit Tests:
 
-[MoveSymbolInteractorSpec](FlowChartsTests/Use%20Cases/Symbol/Move%20Symbol/MoveSymbolInteractorSpec.swift)
-
-[MoveSymbolPresenterSpec_General](FlowChartsTests/Use%20Cases/Symbol/Move%20Symbol/MoveSymbolPresenterSpec_General.swift)
-
-[MoveSymbolPresenterSpec_Move](FlowChartsTests/Use%20Cases/Symbol/Move%20Symbol/MoveSymbolPresenterSpec_Move.swift)
-
+[MoveSymbolInteractorSpec](FlowChartsTests/Use%20Cases/Symbol/Move%20Symbol/MoveSymbolInteractorSpec.swift)\
+[MoveSymbolPresenterSpec_General](FlowChartsTests/Use%20Cases/Symbol/Move%20Symbol/MoveSymbolPresenterSpec_General.swift)\
+[MoveSymbolPresenterSpec_Move](FlowChartsTests/Use%20Cases/Symbol/Move%20Symbol/MoveSymbolPresenterSpec_Move.swift)\
 [MoveSymbolPresenterSpec_MoveError](FlowChartsTests/Use%20Cases/Symbol/Move%20Symbol/MoveSymbolPresenterSpec_MoveError.swift)
+
+
