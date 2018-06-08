@@ -1053,20 +1053,6 @@
 			path = "Edit Text";
 			sourceTree = "<group>";
 		};
-		FA11E0B11F9374BA0018D9C7 /* Lines */ = {
-			isa = PBXGroup;
-			children = (
-				FAF8DE7E1F8A7B8A00EE0C85 /* LineTypePreset.swift */,
-				FAF8DE801F8A80FF00EE0C85 /* StraightLinePreset.swift */,
-				FAF8DE821F8A810A00EE0C85 /* CurvedLinePreset.swift */,
-				FA102FBB1F8F461500D2CCD0 /* PolyLinePreset.swift */,
-				FAF8DE861F8A812D00EE0C85 /* ZigzagLinePreset.swift */,
-				FA102FB71F8F40EC00D2CCD0 /* LineDashPatternPreset.swift */,
-			);
-			name = Lines;
-			path = ..;
-			sourceTree = "<group>";
-		};
 		FA15B5731EDDBE420026D5D2 /* Geometry */ = {
 			isa = PBXGroup;
 			children = (
@@ -1320,11 +1306,8 @@
 		FA57258E205C0E04009DC929 /* Presets */ = {
 			isa = PBXGroup;
 			children = (
-				FA8666951FA5217300A8DEA4 /* Shapes */,
-				FA11E0B11F9374BA0018D9C7 /* Lines */,
-				FAB4398D1F92426700C1106F /* Pointers */,
 			);
-			path = Presets;
+			name = Presets;
 			sourceTree = "<group>";
 		};
 		FA57258F205C0E20009DC929 /* Interactor Helpers */ = {
@@ -1443,6 +1426,7 @@
 				FA572593205C0F6E009DC929 /* CoreGraphics Extensions */,
 				FA572592205C0F62009DC929 /* UIKit Extensions */,
 				FA572591205C0F57009DC929 /* Diagram Geometry Extensions */,
+				FAEDCB9520CA60E2008646C4 /* Presets */,
 				FA572590205C0EDB009DC929 /* Model */,
 				FA57258E205C0E04009DC929 /* Presets */,
 				FA57258D205C0DE0009DC929 /* UI */,
@@ -1520,33 +1504,6 @@
 				FAC33A702053E98F00FFE226 /* Link */,
 			);
 			path = "Use Cases";
-			sourceTree = "<group>";
-		};
-		FA8666951FA5217300A8DEA4 /* Shapes */ = {
-			isa = PBXGroup;
-			children = (
-				FAFFD3B61F6FA337008ECB63 /* ShapePreset.swift */,
-				FA8666751FA51E8200A8DEA4 /* CircleShapePreset.swift */,
-				FA8666771FA51E9000A8DEA4 /* EllipsisShapePreset.swift */,
-				FA8666791FA51E9F00A8DEA4 /* RoundedSideRectShapePreset.swift */,
-				FA86667B1FA51EB000A8DEA4 /* RoundedCorderRectShapePreset.swift */,
-				FA86667D1FA51EBF00A8DEA4 /* RectShapePreset.swift */,
-				FA86667F1FA51ECE00A8DEA4 /* RhombusShapePreset.swift */,
-				FA8666811FA51EDE00A8DEA4 /* HexagonShapePreset.swift */,
-				FA8666831FA51EED00A8DEA4 /* BeveledTopCornerRectShapePreset.swift */,
-				FA8666851FA51EFF00A8DEA4 /* ParallelogramShapePreset.swift */,
-				FA8666871FA51F0E00A8DEA4 /* DocumentShapePreset.swift */,
-				FA8666891FA51F1B00A8DEA4 /* DatabaseShapePreset.swift */,
-				FA86668B1FA51F2A00A8DEA4 /* StoredDataShapePreset.swift */,
-				FA86668D1FA51F3D00A8DEA4 /* UpTriangleShapePreset.swift */,
-				FA86668F1FA51F4C00A8DEA4 /* DownTriangleShapePreset.swift */,
-				FA8666931FA51F7400A8DEA4 /* RightTriangleShapePreset.swift */,
-				FA8666911FA51F6700A8DEA4 /* LeftTriangleShapePreset.swift */,
-				FA8666961FA526E700A8DEA4 /* PlaceholderShapePreset.swift */,
-				FAFFD3BA1F6FE3E7008ECB63 /* SymbolColorPresets.swift */,
-			);
-			name = Shapes;
-			path = ..;
 			sourceTree = "<group>";
 		};
 		FA8CFCF21F5D844A00E0C162 /* View Controller */ = {
@@ -1819,23 +1776,6 @@
 			path = "Resize Symbol";
 			sourceTree = "<group>";
 		};
-		FAB4398D1F92426700C1106F /* Pointers */ = {
-			isa = PBXGroup;
-			children = (
-				FAB4398B1F9241D900C1106F /* PointerPreset.swift */,
-				FAB4398E1F92427E00C1106F /* EmptyPointerPreset.swift */,
-				FAB439901F9242DE00C1106F /* ThinArrowPointerPreset.swift */,
-				FAB439921F9242F200C1106F /* StrokedThickArrowPointerPreset.swift */,
-				FAB439941F92430300C1106F /* FilledThickArrowPointerPreset.swift */,
-				FAB439961F92431B00C1106F /* StrokedTrianglePointerPreset.swift */,
-				FAB439981F92432800C1106F /* FilledTrianglePointerPreset.swift */,
-				FAB4399A1F92433E00C1106F /* StrokedCirclePointerPreset.swift */,
-				FAB4399C1F92434C00C1106F /* FilledCirclePointerPreset.swift */,
-			);
-			name = Pointers;
-			path = ..;
-			sourceTree = "<group>";
-		};
 		FAC03DEC1EE197E3006C4E28 /* Shape */ = {
 			isa = PBXGroup;
 			children = (
@@ -2019,6 +1959,71 @@
 				FADAD9EF1EEA755A0028B037 /* Info.plist */,
 			);
 			path = DiagramViewTests;
+			sourceTree = "<group>";
+		};
+		FAEDCB9520CA60E2008646C4 /* Presets */ = {
+			isa = PBXGroup;
+			children = (
+				FAEDCB9620CA60FE008646C4 /* Shapes */,
+				FAEDCB9720CA6115008646C4 /* Lines */,
+				FAEDCB9820CA6129008646C4 /* Pointers */,
+			);
+			path = Presets;
+			sourceTree = "<group>";
+		};
+		FAEDCB9620CA60FE008646C4 /* Shapes */ = {
+			isa = PBXGroup;
+			children = (
+				FAFFD3B61F6FA337008ECB63 /* ShapePreset.swift */,
+				FA8666751FA51E8200A8DEA4 /* CircleShapePreset.swift */,
+				FA8666771FA51E9000A8DEA4 /* EllipsisShapePreset.swift */,
+				FA8666791FA51E9F00A8DEA4 /* RoundedSideRectShapePreset.swift */,
+				FA86667B1FA51EB000A8DEA4 /* RoundedCorderRectShapePreset.swift */,
+				FA86667D1FA51EBF00A8DEA4 /* RectShapePreset.swift */,
+				FA86667F1FA51ECE00A8DEA4 /* RhombusShapePreset.swift */,
+				FA8666811FA51EDE00A8DEA4 /* HexagonShapePreset.swift */,
+				FA8666831FA51EED00A8DEA4 /* BeveledTopCornerRectShapePreset.swift */,
+				FA8666851FA51EFF00A8DEA4 /* ParallelogramShapePreset.swift */,
+				FA8666871FA51F0E00A8DEA4 /* DocumentShapePreset.swift */,
+				FA8666891FA51F1B00A8DEA4 /* DatabaseShapePreset.swift */,
+				FA86668B1FA51F2A00A8DEA4 /* StoredDataShapePreset.swift */,
+				FA86668D1FA51F3D00A8DEA4 /* UpTriangleShapePreset.swift */,
+				FA86668F1FA51F4C00A8DEA4 /* DownTriangleShapePreset.swift */,
+				FA8666931FA51F7400A8DEA4 /* RightTriangleShapePreset.swift */,
+				FA8666911FA51F6700A8DEA4 /* LeftTriangleShapePreset.swift */,
+				FA8666961FA526E700A8DEA4 /* PlaceholderShapePreset.swift */,
+				FAFFD3BA1F6FE3E7008ECB63 /* SymbolColorPresets.swift */,
+			);
+			path = Shapes;
+			sourceTree = "<group>";
+		};
+		FAEDCB9720CA6115008646C4 /* Lines */ = {
+			isa = PBXGroup;
+			children = (
+				FAF8DE7E1F8A7B8A00EE0C85 /* LineTypePreset.swift */,
+				FAF8DE801F8A80FF00EE0C85 /* StraightLinePreset.swift */,
+				FAF8DE821F8A810A00EE0C85 /* CurvedLinePreset.swift */,
+				FA102FBB1F8F461500D2CCD0 /* PolyLinePreset.swift */,
+				FAF8DE861F8A812D00EE0C85 /* ZigzagLinePreset.swift */,
+				FA102FB71F8F40EC00D2CCD0 /* LineDashPatternPreset.swift */,
+			);
+			path = Lines;
+			sourceTree = "<group>";
+		};
+		FAEDCB9820CA6129008646C4 /* Pointers */ = {
+			isa = PBXGroup;
+			children = (
+				FAB4398B1F9241D900C1106F /* PointerPreset.swift */,
+				FAB4398E1F92427E00C1106F /* EmptyPointerPreset.swift */,
+				FAB439901F9242DE00C1106F /* ThinArrowPointerPreset.swift */,
+				FAB439921F9242F200C1106F /* StrokedThickArrowPointerPreset.swift */,
+				FAB439941F92430300C1106F /* FilledThickArrowPointerPreset.swift */,
+				FAB439961F92431B00C1106F /* StrokedTrianglePointerPreset.swift */,
+				FAB439981F92432800C1106F /* FilledTrianglePointerPreset.swift */,
+				FAB4399A1F92433E00C1106F /* StrokedCirclePointerPreset.swift */,
+				FAB4399C1F92434C00C1106F /* FilledCirclePointerPreset.swift */,
+			);
+			path = Pointers;
 			sourceTree = "<group>";
 		};
 		FAF03AD220515DCC00F8AAB3 /* Edit Symbol Properties */ = {
